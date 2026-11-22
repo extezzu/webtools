@@ -1,0 +1,35 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>robots.txt Tester: is this URL blocked for Googlebot? (free)</title><meta name="description" content="Free robots.txt tester. Paste robots.txt, enter URLs and a user agent, and see which rule allows or blocks each URL, using Google's longest-match and wildcard rules."><link rel="canonical" href="https://extezzu.github.io/webtools/robots-txt-tester/">
+<meta property="og:title" content="robots.txt Tester: is this URL blocked for Googlebot? (free)"><meta property="og:description" content="Free robots.txt tester. Paste robots.txt, enter URLs and a user agent, and see which rule allows or blocks each URL, using Google's longest-match and wildcard rules."><meta property="og:type" content="website">
+<link rel="stylesheet" href="../style.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "robots.txt tester", "description": "Free robots.txt tester. Paste robots.txt, enter URLs and a user agent, and see which rule allows or blocks each URL, using Google's longest-match and wildcard rules.", "url": "https://extezzu.github.io/webtools/robots-txt-tester/", "applicationCategory": "DeveloperApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script></head><body>
+<header><a href="../">SiteCheck Tools</a><nav><a href="../security-headers-generator/">Security headers</a><a href="../sitemap-validator/">Sitemap validator</a><a href="../robots-txt-tester/">robots.txt tester</a><a href="../guides/export-app-store-reviews/">App Store reviews</a></nav></header><main><h1>robots.txt tester</h1>
+<p>Paste your robots.txt and the URLs or paths you want to test. Matching follows Google's rules: the most specific (longest) rule wins, <code>Allow</code> wins ties, and <code>*</code> and <code>$</code> wildcards are supported.</p>
+<div class="card"><label>robots.txt</label><textarea id="rb">User-agent: *
+Disallow: /admin/
+Disallow: /*?sessionid=
+Allow: /admin/public/
+
+Sitemap: https://example.com/sitemap.xml</textarea>
+<div class="row"><div><label>User agent</label><input id="ua" value="Googlebot"></div></div>
+<label>URLs or paths (one per line)</label><textarea id="urls" style="min-height:100px">/admin/settings
+/admin/public/logo.png
+/products?sessionid=123
+/blog/post-1</textarea><button onclick="run()">Test</button><div id="res"></div></div>
+<div class="card cta"><b>Testing a whole site?</b> Our <a href="https://apify.com/extezzu/sitemap-url-validator">Sitemap URL Validator</a> checks every URL in your sitemap and flags pages that are blocked, noindexed, redirected or broken.</div>
+<h2>Common robots.txt mistakes</h2><ul><li><code>Disallow: /</code> left over from a staging site blocks everything.</li><li>Blocking CSS/JS files stops Google from rendering pages properly.</li><li>robots.txt does not remove pages from Google: use <code>noindex</code> for that, and don't block the page or Google can't see the noindex.</li><li>Rules are case-sensitive for paths.</li></ul>
+<script>
+function groups(txt){const gs=[];let cur=null,last='';for(let line of txt.split(/\r?\n/)){line=line.replace(/#.*/,'').trim();if(!line)continue;const i=line.indexOf(':');if(i<0)continue;
+const k=line.slice(0,i).trim().toLowerCase(),v=line.slice(i+1).trim();if(k=='user-agent'){if(last!='ua'){cur={uas:[],rules:[]};gs.push(cur)}cur.uas.push(v.toLowerCase());last='ua'}
+else if((k=='allow'||k=='disallow')&&cur){cur.rules.push({allow:k=='allow',path:v});last='r'}else last='o'}return gs}
+function toRe(p){let e=p.replace(/[.+?^{}()|[\]\\]/g,'\\$&').replace(/\*/g,'.*');if(e.endsWith('\\$'))e=e.slice(0,-2)+'$';return new RegExp('^'+e)}
+function run(){const gs=groups(rb.value);const agent=ua.value.trim().toLowerCase();let best=null,bl=-1;
+for(const g of gs)for(const u of g.uas){if(u!='*'&&agent.includes(u)&&u.length>bl){best=g;bl=u.length}}
+const group=best||gs.find(g=>g.uas.includes('*'));const rows=[];
+for(let raw of urls.value.split(/\n/).map(s=>s.trim()).filter(Boolean)){let p=raw;try{const u=new URL(raw);p=u.pathname+u.search}catch(e){if(!p.startsWith('/'))p='/'+p}
+let win=null;if(group)for(const r of group.rules){if(r.path===''){continue}if(toRe(r.path).test(p)){const len=r.path.length;if(!win||len>win.path.length||(len==win.path.length&&r.allow))win=r}}
+const allowed=!win||win.allow;rows.push(`<tr><td>${raw.replace(/</g,'&lt;')}</td><td class="${allowed?'ok':'bad'}">${allowed?'Allowed':'Blocked'}</td><td>${win?(win.allow?'Allow: ':'Disallow: ')+win.path.replace(/</g,'&lt;'):'no matching rule'}</td></tr>`)}
+res.innerHTML=`<p class="muted">Group used: ${group?'User-agent: '+group.uas.join(', '):'none (everything allowed)'}</p><table><tr><th>URL</th><th>Result</th><th>Deciding rule</th></tr>${rows.join('')}</table>`}
+run();
+</script></main>
+<footer>Free, private tools: everything runs in your browser, nothing is uploaded. Need it for thousands of sites or on a schedule? See our cloud versions on <a href="https://apify.com/extezzu">Apify</a>. Source: <a href="https://github.com/extezzu/webtools">GitHub</a>.</footer>
+</body></html>
