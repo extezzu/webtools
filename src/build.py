@@ -2,7 +2,7 @@ import json, os, sys
 BASE = "https://extezzu.github.io/webtools/"
 OUT = sys.argv[1] if len(sys.argv) > 1 else "."
 NAV = [("security-headers-generator/", "Security headers"), ("sitemap-validator/", "Sitemap validator"),
-       ("robots-txt-tester/", "robots.txt tester"), ("guides/export-app-store-reviews/", "App Store reviews")]
+       ("robots-txt-tester/", "robots.txt tester"), ("open-graph-meta-tag-generator/", "Meta tags"), ("guides/export-app-store-reviews/", "App Store reviews")]
 
 def page(path, title, desc, body, schema=None):
     depth = path.count("/")

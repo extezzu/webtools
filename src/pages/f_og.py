@@ -1,0 +1,31 @@
+PAGES = [{"tool": True, "name": "Open Graph & meta tag generator", "path": "open-graph-meta-tag-generator/",
+ "title": "Open Graph & Twitter Card Meta Tag Generator with preview (free)",
+ "desc": "Free Open Graph and Twitter Card meta tag generator. Fill in title, description, image and URL, check length limits, preview the share card and copy the HTML.",
+ "body": r"""<h1>Open Graph &amp; meta tag generator</h1>
+<p>Fill in the fields to get ready-to-paste <code>&lt;head&gt;</code> tags for search results, Facebook, LinkedIn, Slack and X (Twitter). Length checks follow common display limits: about 60 characters for titles and 160 for descriptions.</p>
+<div class="card">
+<label>Page title</label><input id="t" value="Acme Analytics: privacy-friendly web stats">
+<label>Description</label><textarea id="d" style="min-height:70px">Simple, cookie-free website analytics. See visitors, sources and top pages without tracking personal data.</textarea>
+<label>Canonical URL</label><input id="u" value="https://example.com/">
+<label>Image URL (1200×630 recommended)</label><input id="i" value="https://example.com/og.png">
+<div class="row"><div><label>Site name</label><input id="s" value="Acme"></div><div><label>Type</label><select id="ty"><option>website</option><option>article</option><option>product</option></select></div><div><label>X / Twitter handle</label><input id="h" value="@acme"></div></div>
+<div id="chk"></div>
+<div id="pv" style="border:1px solid var(--line,#ccc);border-radius:10px;overflow:hidden;max-width:520px;margin:12px 0"><div id="pimg" style="aspect-ratio:1200/630;background:#8884 center/cover"></div><div style="padding:10px"><div id="pdom" class="muted" style="font-size:12px;text-transform:uppercase"></div><b id="pt"></b><div id="pd" class="muted" style="font-size:14px"></div></div></div>
+<label>HTML</label><textarea id="out" style="min-height:220px" readonly></textarea><button onclick="navigator.clipboard.writeText(out.value)">Copy</button></div>
+<div class="card cta"><b>Auditing many pages?</b> Our <a href="https://apify.com/extezzu/sitemap-url-validator">Sitemap URL Validator</a> checks every URL in your sitemap for status codes, redirects, noindex and canonical problems.</div>
+<h2>Tips</h2><ul><li>Use absolute URLs (with https://) for <code>og:image</code> and <code>og:url</code>; relative paths are ignored by most crawlers.</li><li>Images of 1200×630 px work on Facebook, LinkedIn and X's large card; keep them under 5 MB.</li><li>After changing tags, platforms cache old previews: re-scrape with their debug tools.</li><li>Keep the title tag and <code>og:title</code> similar so search and social match.</li></ul>
+<script>
+const esc=s=>s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+function gen(){const T=t.value.trim(),D=d.value.trim(),U=u.value.trim(),I=i.value.trim(),S=s.value.trim(),H=h.value.trim();
+const L=[`<title>${esc(T)}</title>`,`<meta name="description" content="${esc(D)}">`];if(U)L.push(`<link rel="canonical" href="${esc(U)}">`);
+L.push(`<meta property="og:type" content="${ty.value}">`,`<meta property="og:title" content="${esc(T)}">`,`<meta property="og:description" content="${esc(D)}">`);
+if(U)L.push(`<meta property="og:url" content="${esc(U)}">`);if(I)L.push(`<meta property="og:image" content="${esc(I)}">`);if(S)L.push(`<meta property="og:site_name" content="${esc(S)}">`);
+L.push(`<meta name="twitter:card" content="${I?'summary_large_image':'summary'}">`);if(H)L.push(`<meta name="twitter:site" content="${esc(H.startsWith('@')?H:'@'+H)}">`);
+L.push(`<meta name="twitter:title" content="${esc(T)}">`,`<meta name="twitter:description" content="${esc(D)}">`);if(I)L.push(`<meta name="twitter:image" content="${esc(I)}">`);
+out.value=L.join('\n');const w=[];if(T.length>60)w.push(`Title is ${T.length} chars: may be cut after ~60.`);if(T.length<15)w.push('Title is very short.');
+if(D.length>160)w.push(`Description is ${D.length} chars: may be cut after ~160.`);if(D.length<50)w.push('Description is short: aim for 70–160 chars.');
+for(const [n,v] of [['URL',U],['Image',I]])if(v&&!/^https?:\/\//.test(v))w.push(n+' should be an absolute URL.');
+chk.innerHTML=w.length?'<p class="bad">'+w.map(esc).join('<br>')+'</p>':'<p class="ok">Lengths look good.</p>';
+pt.textContent=T;pd.textContent=D.length>110?D.slice(0,110)+'…':D;let dom='';try{dom=new URL(U).hostname}catch(e){}pdom.textContent=dom;pimg.style.backgroundImage=I?`url("${I.replace(/"/g,'')}")`:'none'}
+document.querySelectorAll('input,textarea,select').forEach(e=>e.addEventListener('input',gen));gen();
+</script>"""}]
