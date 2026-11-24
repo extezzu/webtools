@@ -1,0 +1,32 @@
+PAGES = [{"tool": True, "name": "hreflang tag generator", "path": "hreflang-tag-generator/",
+ "title": "hreflang Tag Generator & Checker: HTML, HTTP header and sitemap (free)",
+ "desc": "Free hreflang generator. Enter language/region codes and URLs to get hreflang link tags, HTTP Link headers or XML sitemap entries, with checks for invalid codes and missing x-default.",
+ "body": r"""<h1>hreflang tag generator</h1>
+<p>List each language or regional version of a page as <code>code URL</code>, one per line. Codes are an ISO 639-1 language, optionally followed by an ISO 3166-1 region (<code>en</code>, <code>en-GB</code>, <code>pt-BR</code>), or <code>x-default</code> for the fallback page.</p>
+<div class="card"><label>Versions (code URL)</label><textarea id="v" style="min-height:130px">en https://example.com/
+en-GB https://example.com/uk/
+de https://example.com/de/
+uk https://example.com/ua/
+x-default https://example.com/</textarea>
+<div class="row"><div><label>Output</label><select id="f"><option value="html">HTML &lt;link&gt; tags</option><option value="hdr">HTTP Link header</option><option value="xml">XML sitemap</option></select></div></div>
+<div id="chk"></div><label>Result</label><textarea id="out" style="min-height:220px" readonly></textarea><button onclick="navigator.clipboard.writeText(out.value)">Copy</button></div>
+<div class="card cta"><b>Checking a whole site?</b> Our <a href="https://apify.com/extezzu/sitemap-url-validator">Sitemap URL Validator</a> fetches every URL in your sitemap and flags broken pages, redirects, noindex and canonical problems that make hreflang fail.</div>
+<h2>Rules Google applies</h2><ul><li>Every version must list <b>all</b> versions, including itself (return links). Missing return links make Google ignore the pair.</li><li>Use full absolute URLs, and the canonical URL of each version.</li><li>Region alone is invalid: <code>gb</code> means not a language; use <code>en-GB</code>. <code>en-UK</code> is wrong too: the code for the United Kingdom is <code>GB</code>.</li><li>Ukrainian is <code>uk</code>, not <code>ua</code>; Czech is <code>cs</code>, not <code>cz</code>.</li><li>Add <code>x-default</code> for a language picker or global fallback page.</li><li>Use one method per page (HTML, header or sitemap); mixing is allowed but must agree.</li></ul>
+<script>
+const LANGS='aa ab af ak am an ar as av ay az ba be bg bh bi bm bn bo br bs ca ce ch co cr cs cu cv cy da de dv dz ee el en eo es et eu fa ff fi fj fo fr fy ga gd gl gn gu gv ha he hi ho hr ht hu hy hz ia id ie ig ii ik io is it iu ja jv ka kg ki kj kk kl km kn ko kr ks ku kv kw ky la lb lg li ln lo lt lu lv mg mh mi mk ml mn mr ms mt my na nb nd ne ng nl nn no nr nv ny oc oj om or os pa pi pl ps pt qu rm rn ro ru rw sa sc sd se sg si sk sl sm sn so sq sr ss st su sv sw ta te tg th ti tk tl tn to tr ts tt tw ty ug uk ur uz ve vi vo wa wo xh yi yo za zh zu'.split(' ');
+const TIPS={ua:'uk (Ukrainian)',cz:'cs (Czech)',gr:'el (Greek)',jp:'ja (Japanese)',dk:'da (Danish)',se:'sv (Swedish)',cn:'zh (Chinese)',kr:'ko (Korean)','en-uk':'en-GB'};
+const esc=s=>s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+function gen(){const rows=[],w=[],seen=new Set();
+for(const line of v.value.split(/\n/).map(s=>s.trim()).filter(Boolean)){const [c,u]=line.split(/\s+/);if(!u){w.push('Missing URL: '+line);continue}
+const lc=c.toLowerCase();let ok=lc=='x-default';if(!ok){const m=lc.match(/^([a-z]{2})(?:-([a-z]{2}|[a-z]{4}|[a-z]{4}-[a-z]{2}))?$/);ok=!!m&&LANGS.includes(m[1])}
+if(!ok)w.push(`Invalid code "${c}"`+(TIPS[lc]?`: did you mean ${TIPS[lc]}?`:''));else if(TIPS[lc])w.push(`"${c}" is valid but probably wrong: did you mean ${TIPS[lc]}?`);
+if(!/^https?:\/\//.test(u))w.push('Not absolute: '+u);if(seen.has(lc))w.push('Duplicate code: '+c);seen.add(lc);
+const p=c.split('-');const code=lc=='x-default'?'x-default':p[0].toLowerCase()+(p[1]?'-'+(p[1].length==2?p[1].toUpperCase():p[1][0].toUpperCase()+p[1].slice(1).toLowerCase()):'')+(p[2]?'-'+p[2].toUpperCase():'');rows.push([code,u])}
+if(rows.length&&!seen.has('x-default'))w.push('No x-default: consider adding one for users whose language you don\'t serve.');
+if(f.value=='html')out.value=rows.map(([c,u])=>`<link rel="alternate" hreflang="${c}" href="${esc(u)}" />`).join('\n');
+else if(f.value=='hdr')out.value='Link: '+rows.map(([c,u])=>`<${u}>; rel="alternate"; hreflang="${c}"`).join(',\n      ');
+else{const urls=[...new Set(rows.filter(r=>r[0]!='x-default').map(r=>r[1]))];const alt=rows.map(([c,u])=>`    <xhtml:link rel="alternate" hreflang="${c}" href="${esc(u)}"/>`).join('\n');
+out.value='<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n        xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'+urls.map(u=>`  <url>\n    <loc>${esc(u)}</loc>\n${alt}\n  </url>`).join('\n')+'\n</urlset>'}
+chk.innerHTML=w.length?'<p class="bad">'+w.map(esc).join('<br>')+'</p>':'<p class="ok">All codes valid.</p>'}
+v.addEventListener('input',gen);f.addEventListener('change',gen);gen();
+</script>"""}]
