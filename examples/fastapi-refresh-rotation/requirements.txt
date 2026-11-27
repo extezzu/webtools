@@ -1,0 +1,4 @@
+fastapi
+pyjwt
+httpx
+pytest
