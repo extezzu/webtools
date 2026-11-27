@@ -1,4 +1,4 @@
-_url = "https://www.creem.io/stores/launchpad-kits?utm_source=webtools&utm_medium=referral&utm_campaign=saas_guide"
+_url = "https://www.creem.io/product/prod_7LIIfd0Y6cBufZxtRTfNO9?utm_source=webtools&utm_medium=referral&utm_campaign=saas_guide"
 _t = "FastAPI SaaS backend checklist: auth, teams, API keys and billing"
 _d = "What a multi-tenant FastAPI SaaS backend needs before launch: refresh-token auth, organizations and roles, hashed API keys, Stripe webhooks, plan limits. A checklist, plus a tested starter."
 _p = "guides/fastapi-saas-backend-checklist/"
