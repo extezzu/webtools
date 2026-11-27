@@ -1,0 +1,29 @@
+PAGES = [{"tool": True, "name": "FAQ schema generator", "path": "faq-schema-generator/",
+ "title": "FAQ Schema (JSON-LD) Generator: FAQPage markup, free",
+ "desc": "Free FAQPage JSON-LD generator. Enter questions and answers, get valid schema.org markup to paste into your page, plus the matching HTML and checks for empty or duplicate entries.",
+ "body": r"""<h1>FAQ schema generator</h1>
+<p>Write one question per block: the question on the first line, the answer on the following lines, and a blank line between items. You get valid <code>FAQPage</code> JSON-LD to paste in your page's <code>&lt;head&gt;</code> or body, and optional matching HTML.</p>
+<div class="card"><label>Questions and answers</label><textarea id="v" style="min-height:200px">What is your return policy?
+You can return any unused item within 30 days for a full refund.
+
+Do you ship internationally?
+Yes. We ship to more than 40 countries; delivery takes 5-10 business days.
+
+How do I contact support?
+Email support@example.com or use the chat widget, Monday to Friday.</textarea>
+<div id="chk"></div><label>JSON-LD</label><textarea id="out" style="min-height:200px" readonly></textarea><button onclick="navigator.clipboard.writeText(out.value)">Copy</button>
+<label>Matching HTML (answers must be visible on the page)</label><textarea id="html" style="min-height:120px" readonly></textarea><button onclick="navigator.clipboard.writeText(html.value)">Copy HTML</button></div>
+<div class="card cta"><b>Check the whole site:</b> run our <a href="https://apify.com/extezzu/sitemap-url-validator">Sitemap URL Validator</a> to find broken or noindexed pages before adding more markup.</div>
+<h2>Things to know</h2><ul><li>The questions and answers in the markup must also be visible on the page, or the markup breaks Google's guidelines.</li><li>Since 2023 Google shows FAQ rich results only for well-known government and health sites, so for most sites the markup no longer gives expandable results in Google Search. It is still valid schema.org, and other engines and AI assistants can read it.</li><li>Do not use FAQPage for forums or user-submitted answers (use QAPage), or for advertising.</li><li>Test the result with Google's Rich Results Test or the Schema Markup Validator.</li></ul>
+<script>
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+function gen(){const items=[],w=[],seen=new Set();
+for(const blk of v.value.split(/\n\s*\n/).map(b=>b.trim()).filter(Boolean)){const ls=blk.split('\n');const q=ls[0].trim(),a=ls.slice(1).join('\n').trim();
+if(!a){w.push('No answer for: '+q);continue}if(seen.has(q.toLowerCase()))w.push('Duplicate question: '+q);seen.add(q.toLowerCase());if(!/\?$/.test(q))w.push('Question without "?": '+q);items.push({q,a})}
+const j={"@context":"https://schema.org","@type":"FAQPage","mainEntity":items.map(i=>({"@type":"Question","name":i.q,"acceptedAnswer":{"@type":"Answer","text":i.a}}))};
+out.value='<script type="application/ld+json">\n'+JSON.stringify(j,null,2).replace(/</g,'\\u003c')+'\n<\/script>';
+html.value=items.map(i=>`<h3>${esc(i.q)}</h3>\n<p>${esc(i.a).replace(/\n/g,'<br>')}</p>`).join('\n');
+if(!items.length)w.push('Add at least one question and answer.');
+chk.innerHTML=w.length?'<p class="bad">'+w.map(esc).join('<br>')+'</p>':`<p class="ok">${items.length} questions, no problems found.</p>`}
+v.addEventListener('input',gen);gen();
+</script>"""}]
