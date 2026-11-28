@@ -11,6 +11,7 @@ PAGES = [{"path": "", "title": "SiteCheck Tools: free security headers, sitemap 
 <div class="card"><h3><a href="301-redirect-generator/">301 redirect generator</a></h3><p>Turn a list of old and new URLs into redirect rules for .htaccess, Nginx, Netlify, Vercel or Cloudflare, and catch loops and chains.</p></div>
 <div class="card"><h3><a href="utm-link-builder/">UTM link builder</a></h3><p>Add GA4 campaign parameters to one or many URLs, with checks for non-standard mediums and mixed case.</p></div>
 <div class="card"><h3><a href="faq-schema-generator/">FAQ schema generator</a></h3><p>Turn questions and answers into valid FAQPage JSON-LD plus matching HTML, with duplicate and missing-answer checks.</p></div>
+<div class="card"><h3><a href="robots-meta-tag-generator/">Robots meta &amp; X-Robots-Tag generator</a></h3><p>Generate noindex, nofollow and snippet directives as a meta tag or HTTP header with Apache and Nginx config.</p></div>
 <div class="card"><h3><a href="guides/export-app-store-reviews/">Export App Store reviews</a></h3><p>How to download Apple App Store reviews for any app from every country to CSV or Excel.</p></div>
 </div>
 <h2>Guides</h2><ul>
